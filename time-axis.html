@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		rect.bg{
+			fill:#DDD;
+		}
+		.axis path,
+		.axis line{
+			fill:none;
+			stroke:#000;
+			stroke-width:1px;
+		}
+		.axis.minor text{
+			fill:none;
+		}
+	</style>
+
+</head>
+<body>
+	<div class="box"></div>
+
+	<script type="text/javascript" src="moment.min.js"></script>
+	<script type="text/javascript" src="d3.js"></script>
+
+	<script type="text/javascript" src="d3.axis.time.minorTicksMeasure.js"></script>
+	<script type="text/javascript">
+
+		var width = 960,
+			height = 70;
+
+		var svg = d3.select(".box").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+		
+		var scale = d3.time.scale()
+			.domain([moment(), moment().add(1, "d")])
+			.range([0, width]);
+
+		var zoom = d3.behavior.zoom()
+			.x(scale)
+			// .scaleExtent([0.1,100])
+			.on("zoom", function(){
+				svg.select(".x.axis.major").call(majorAxis);
+				drawSubAxis();
+			});
+
+		var majorAxis = d3.svg.axis()
+			.orient("top")
+			.scale(scale)
+			.tickSize(19,0);
+
+		var minorAxis = d3.svg.axis()
+			.orient("top")
+			.scale(scale)
+			.tickSize(12, 0);
+			
+
+		svg.append("rect")
+			.attr("width", width)
+			.attr("height", height)
+			.attr("class", "bg")
+			.call(zoom);
+
+		svg.append("g")
+			.attr("class", "x axis major")
+			.attr("transform", "translate(0," + height + ")")
+			.call(majorAxis);
+
+
+		svg.append("g")
+			.attr("class", "x axis minor")
+			.attr("transform", "translate(0," + height + ")")
+			.call(drawSubAxis);
+
+		function drawSubAxis(){
+			var ticks = scale.ticks();
+
+			var res = minorTicksMeasure.getInterval(ticks[0], ticks[1]);
+
+			console.log(res);
+
+			var interval = minorTicksMeasure.d3Intervals[res.interval]
+			var step = res.step;
+
+			svg.select(".x.axis.minor")
+					.call(minorAxis
+							.ticks(interval, step)
+						);
+		}
+	</script>
+</body>
+</html>

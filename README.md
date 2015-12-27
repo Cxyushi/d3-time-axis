@@ -1,2 +1,2 @@
 # d3-time-axis
-Time axis using d3.js
+Time axis with major and minor ticks using d3.js
